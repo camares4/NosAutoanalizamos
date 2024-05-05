@@ -1,0 +1,82 @@
+---
+title: "Nos Autoanalizamos"
+author: "Carolina Martínez Escamilla"
+date: "2024-05-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Importarción de datos:
+
+```{r}
+library(readr)
+guess_encoding("NosAutoanalizamos2024 - Hoja1.tsv")
+
+mydf <- read_delim("NosAutoanalizamos2024 - Hoja1.tsv", 
+    delim = "\t", escape_double = FALSE, 
+    trim_ws = TRUE, skip = 25)
+```
+Correcciones rutinarias
+  Errores que hay que corregir antes de empezar a analizar los datos: unidades, formato de nombres...
+
+Podemos usar la librería _deducorrect_ o _validate_, que nos permite añadir correcciones.
+
+```{r}
+#Eliminamos la última línea porque es una línea errónea
+mydf <- mydf[1:nrow(mydf)-1,]
+
+```
+
+
+```{r echo = FALSE}
+#Cambiamos los tipos de las variables
+
+str(mydf)
+# "FechaNac(DD-MM-YYY)" "Id"                  "Age"                 "Sex"                
+# "Wr.Hnd"              "NW.Hnd"              "Fold"                "Pulse"              
+# "Clap"                "Exer"                "Smoke"               "Height"             
+# "ALG"                 "ANM"                 "FP"                  "DCS"                
+# "MD"                  "HSt"                 "Hwork"               "Comentarios"  
+
+#Separamos las variables por tipos
+VarFactor <- c("Id","Sex","NW.Hnd","Fold","Clap","Smoke")
+VerText <- "Comentarios"
+VarNum <- c("Age","Wr.Hnd","Pulse","Exer","Height","ALG","ANM","FP","DCS","MD","HSt","Hwork")
+VarFecha <- "FechaNac(DD-MM-YYY)"
+```
+
+
+
+
+Analizo las categorías de tipo factor
+```{r}
+#Aplica una función sobre cada columna
+sapply((mydf[,VarFactor]) , unique) #Vemos los niveles de cada factor
+
+mydf$Fold <- tolower(mydf$Fold)
+mydf$Fold
+mydf$Smoke <- toupper(mydf$Smoke)
+
+
+```
+
+Analizo las categorías de tipo numérico
+```{r}
+mydf$Notas <- gsub(x = , pattern = ",",replacement = ".")
+```
+
+Detectar outliers:
+Reglas para identificar outliers: regla de hampel, regla sigma...
+
+
+
+Imputación de datos perdidos
+  No debemos imputar datos si tenemos demasiados datos perdidos, es mejor eliminar esos registros.
+
+Para imputar datos usar la librería _MICE_
+
+
+
